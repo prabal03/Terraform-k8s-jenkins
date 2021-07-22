@@ -1,0 +1,9 @@
+[master]
+%{ for index in master_public_ip ~}
+${index}
+%{ endfor ~}
+
+[worker]
+%{ for index in worker_public_ip ~}
+${index}
+%{ endfor ~}
