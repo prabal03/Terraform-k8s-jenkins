@@ -54,5 +54,11 @@
   register: token
 - name: "creating overlay network"
   command: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+- name: "-- Copying scrpting file --"
+  copy:
+      dest: ./
+      src: script.sh
+- name: "-- Running Script --"
+  command: "bash script.sh"
 - debug:
         msg: "********Master has been setup successfully********"
