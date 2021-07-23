@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+        name: "gremlin-daemon"
+
+spec:
+     selector: 
+          matchLabels:
+                 name: gremlin
+     template:
+          metadata: 
+              name: gremlin-pod
+              labels:
+                      name: gremlin 
+   
+          spec:
+             hostPID: true
+             hostNetwork: true
+             containers:
+             - name: "gremlin-cont"
+               image: gremlin/gremlin
+               securityContext:
+                  capabilities:
+                      add: ["NET_ADMIN", "SYS_TIME", "SYS_BOOT", "KILL"]
+               volumeMounts:
+               - mountPath: "/var/lib/gremlin"
+                 name: v1
+               - mountPath: "/var/log/gremlin"
+                 name: v2
+               - mountPath: "/var/run/docker.sock"
+                 name: v3
+               env:
+                - name: GREMLIN_TEAM_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: mysecret
+                      key: team_id
+
+                - name: GREMLIN_TEAM_SECRET
+                  valueFrom:
+                     secretKeyRef:
+                        name: mysecret
+                        key: secret_key
+
+               args: ["attack", "cpu"]
+             volumes:
+             - name: v1
+               hostPath:
+                  path: "/root/var/lib/gremlin"
+             - name: v2
+               hostPath:
+                  path: "/root/var/log/gremlin"
+             - name: v3
+               hostPath:
+                  path: "/var/run/docker.sock"
+
